@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SPEEDxLIVE | Key System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif;}
+
+body{
+    min-height:100vh;
+    background:radial-gradient(circle at top,#3b0a57,#0b0220 70%);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    overflow:hidden;
+}
+
+body::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:radial-gradient(white 1px, transparent 1px);
+    background-size:40px 40px;
+    opacity:.3;
+    animation:move 30s linear infinite;
+}
+
+@keyframes move{
+    to{background-position:500px 500px;}
+}
+
+.container{
+    width:95%;
+    max-width:420px;
+    text-align:center;
+    position:relative;
+    z-index:2;
+}
+
+.logo-circle{
+    width:160px;height:160px;border-radius:50%;
+    margin:0 auto 20px;
+    background:black;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 20px #00eaff,0 0 40px #ff0077;
+    border:4px solid #00eaff;
+}
+
+.logo-circle img{width:120px;}
+
+h1{font-size:28px;letter-spacing:3px;}
+h1 span{color:#00eaff;}
+
+.sub{margin:10px 0 25px;color:#00eaff;letter-spacing:2px;}
+
+.card{
+    background:rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 0 20px rgba(0,255,255,.3);
+    margin-bottom:25px;
+}
+
+select{
+    width:100%;
+    padding:15px;
+    border-radius:30px;
+    border:none;
+    background:#1a1230;
+    color:white;
+    margin-bottom:20px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    border-radius:30px;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+    letter-spacing:2px;
+    background:linear-gradient(90deg,#00eaff,#ff0077);
+    color:white;
+}
+
+button:disabled{opacity:.6;cursor:not-allowed;}
+
+.key-box{
+    margin-top:20px;
+    background:black;
+    padding:15px;
+    border-radius:15px;
+    color:#00eaff;
+    word-break:break-all;
+    display:none;
+}
+
+.telegram{
+    background:rgba(255,255,255,.08);
+    padding:20px;
+    border-radius:20px;
+}
+
+.telegram a{
+    display:block;
+    padding:15px;
+    border-radius:30px;
+    background:linear-gradient(90deg,#ff00ff,#6a00ff);
+    color:white;
+    font-weight:bold;
+    letter-spacing:2px;
+    text-decoration:none;
+}
+
+footer{margin-top:15px;font-size:11px;opacity:.6;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo-circle">
+<img src="https://i.imgur.com/8Km9tLL.png">
+</div>
+
+<h1>SPEED<span>xLIVE</span></h1>
+<div class="sub">KEY SYSTEM</div>
+
+<div class="card">
+<p style="margin-bottom:10px;opacity:.8;">Select Key Type and Generate</p>
+
+<select id="keyType">
+<option>BR-KEY 1DAY (SITE - 1)</option>
+<option>IND-KEY 1DAY (SITE - 1)</option>
+<option>GLOBAL-KEY 7DAY</option>
+</select>
+
+<button id="genBtn" onclick="generateKey()">GENERATE KEY</button>
+
+<div class="key-box" id="keyBox"></div>
+</div>
+
+<div class="telegram">
+<p style="margin-bottom:10px;">Join our Telegram Community</p>
+<a href="https://t.me/yourtelegram" target="_blank">JOIN TELEGRAM</a>
+</div>
+
+<footer>© 2026 CODEXOWNER • Secure Key System</footer>
+
+</div>
+
+<script>
+function generateKey(){
+    const box = document.getElementById("keyBox");
+    const btn = document.getElementById("genBtn");
+
+    box.style.display="block";
+    box.innerText="⏳ Generating...";
+    btn.disabled=true;
+
+    fetch("/generate",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            type:document.getElementById("keyType").value
+        })
+    })
+    .then(r=>r.json())
+    .then(d=>{
+        if(d.key) box.innerText="🔑 YOUR KEY\n\n"+d.key;
+        else if(d.keys && d.keys.length) box.innerText="🔑 YOUR KEY\n\n"+d.keys[0];
+        else box.innerText="❌ Failed to generate key";
+    })
+    .catch(()=>box.innerText="❌ Server Error")
+    .finally(()=>btn.disabled=false);
+}
+</script>
+
+</body>
+</html>
